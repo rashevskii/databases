@@ -79,7 +79,7 @@ create table `place_of_birth`(
 
 drop table if exists `registration_address`;
 create table `registration_address`(
-	`id` serial primary key,
+	`address_id` serial primary key,
 	`country` varchar(100),
 	`region` varchar(100),
 	`locality` varchar(50),
@@ -88,7 +88,7 @@ create table `registration_address`(
 	`sub_building` varchar(20),
 	`flat` int,
 	
-	foreign key (`id`) references `users`(`id`)
+	foreign key (`address_id`) references `users`(`id`)
 	on update cascade
 	on delete restrict
 );
@@ -96,15 +96,16 @@ create table `registration_address`(
 drop table if exists `type_of_documents`;
 create table `type_of_documents`(
 	`id` serial primary key,
-	`type` enum('Паспорт', 'СНИЛС', 'ИНН', 'Свидетельство о рождении', 'Водительское удостовирение', 'Полис ОМС', 'Заграничный паспорт', 'Военный билет')
+	`type` enum('passport', 'SNILS', 'INN', 'birth_certificate', 'driver_license', 'medical_policy', 'international_passport', 'military_ID')
 );
 
 drop table if exists `documents`;
 create table `documents`(
 	`id` serial primary key,
 	`user_id` BIGINT UNSIGNED NOT null,
+	`serial_number` bigint unsigned not null unique,
 	`title` varchar(150) not null,
-	`type_of_document` BIGINT UNSIGNED NOT NULL UNIQUE,
+	`type_of_document` BIGINT UNSIGNED NOT NULL,
 	`date_of_issue` date not null,
 	`validity` date,
 	`place_of_issue` varchar(250),
@@ -139,12 +140,12 @@ create table `services`(
 	`costs` bigint
 );
 
-drop table if exists `receiving service`;
-create table `receiving service`(
+drop table if exists `receiving_service`;
+create table `receiving_service`(
 	`id` serial primary key,
 	`id_user` bigint unsigned not null unique,
 	`title` varchar(300),
-	`status` enum('исполняется', 'исполнена', 'отказ'),
+	`status` enum('performed', 'executed', 'failure'),
 	`created_at` datetime default now(),
 	`updated_at` datetime default now(),
 	
